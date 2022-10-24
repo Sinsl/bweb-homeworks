@@ -158,14 +158,32 @@ class Dadata
 // За счёт этого не создаются новые сетевые соединения на каждый запрос,
 // а переиспользуется существующее.
 
-$token = "0c8b7d7788ff4d71d12e08ba8ea0dc772a065907";
-$secret = "940a6eb08da1765d18a14f478840eac34cbb771d";
+$method = $_SERVER['REQUEST_METHOD'];
+if ($method == 'POST') { 
+    $token = $_POST['token'];
+    $secret = $_POST['secret'];
+} else {
+    $token = $_GET['token'];
+    $secret = $_GET['secret'];
+}
+
 
 $dadata = new Dadata($token, $secret);
 $dadata->init();
 
+
+if ($method == 'POST') { 
+    echo 'Method is POST';
+    $result = $dadata->clean("name", $_POST['user_name']." ".$_POST['user_second_name']." ".$_POST['user_last_name']);
+} elseif ($method == 'GET') { 
+    echo 'Method is GET';
+    $result = $dadata->clean("name", $_GET['user_name']." ".$_GET['user_second_name']." ".$_GET['user_last_name']);
+} else { 
+    $result = 'other method';
+}
+
 // Стандартизовать ФИО
-$result = $dadata->clean("name", $_POST['user_name']." ".$_POST['user_second_name']." ".$_POST['user_last_name']);
+// $result = $dadata->clean("name", $_POST['user_name']." ".$_POST['user_second_name']." ".$_POST['user_last_name']);
 
 echo '<pre>';
 print_r($result);
